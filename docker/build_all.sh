@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RELEASE=13
+RELEASE=14
 
 DIRS="hmi plc simulation"
 DIRS="hmi simulation"
