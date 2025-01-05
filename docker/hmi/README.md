@@ -7,13 +7,13 @@ docker build -t dainok/grficsv2-hmi:latest .
 Run with:
 
 ```
-docker run --name hmi --rm -d -p 80:80 -p 5025:5025 dainok/grficsv2-hmi:latest
+docker run --name hmi --rm -d -p 80:80 dainok/grficsv2-hmi:latest
 ```
 
 Debug with:
 
 ```
-docker run --name hmi --rm -it --entrypoint=/bin/bash -p 80:80 -p 5025:5025 dainok/grficsv2-hmi:latest
+docker run --name hmi --rm -it --entrypoint=/bin/bash -p 80:80 dainok/grficsv2-hmi:latest
 ```
 
 Publish with:
