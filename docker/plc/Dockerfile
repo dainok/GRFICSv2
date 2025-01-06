@@ -17,5 +17,7 @@ RUN printf "n\n1\n" | bash /usr/local/src/OpenPLC/build.sh
 # Configure simulation IP address
 COPY --chmod=0755 set_sim_address.sh /sbin
 
-# Start the server
+# Startup
+EXPOSE 502:502
+EXPOSE 80:8080
 ENTRYPOINT /sbin/set_sim_address.sh && /usr/bin/nodejs server.js
