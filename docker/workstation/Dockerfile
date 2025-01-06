@@ -18,9 +18,9 @@ RUN git clone https://github.com/thiagoralves/OpenPLC_Editor
 RUN /home/user/OpenPLC_Editor/install.sh
 
 # Copy PLC rojects
-RUN mkdir /home/user/Documents
-COPY --chown=user attack.xml /home/user/Documents/attack.xml
-COPY --chown=user plc.xml /home/user/Documents/plc.xml
+RUN mkdir /home/user/Desktop
+COPY --chown=user attack.st /home/user/Desktop/attack.st
+COPY --chown=user plc.st /home/user/Desktop/plc.st
 
 # Download noVNC
 RUN git clone https://github.com/novnc/noVNC
@@ -32,7 +32,7 @@ RUN ln -s /home/user/.vnc/xstartup /home/user/.xinitrc
 COPY --chown=user launch.sh /home/user/noVNC/utils/launch.sh
 COPY --chown=user index.html /home/user/noVNC/index.html
 COPY --chown=user passwd /home/user/.vnc/passwd
-COPY --chown=user --chmod=0755 xstartup /home/plant/.vnc/xstartup
+COPY --chown=user --chmod=0755 xstartup /home/user/.vnc/xstartup
 ENV USER=user
 
 # Startup
