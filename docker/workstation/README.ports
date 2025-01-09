@@ -1,0 +1,15 @@
+6901
+
+user: kasm_user
+
+
+https://github.com/kasmtech/KasmVNC/issues/259
+
+
+docker run --name workstation --rm -it -p 443:6901 --shm-size=512m -e VNC_PW=password -v /mnt/workstation:/kasm-user/Desktop dainok/grficsv2-workstation:13
+
+
+$HOME/.kasmpasswd
+
+
+docker run --name workstation --rm -it -p 443:6901 --shm-size=512m -e VNC_PW=password -v /mnt/workstation:/kasm-user/Desktop -e DEFAULT_ARGS=-disableBasicAuth dainok/grficsv2-workstation:13

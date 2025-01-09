@@ -1,40 +1,38 @@
-FROM ubuntu:20.04
+ARG BASE_TAG="develop"
+ARG BASE_IMAGE="core-ubuntu-focal"
+FROM kasmweb/$BASE_IMAGE:$BASE_TAG
+USER root
 
-# Install dependencies
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-RUN apt-get install -y wget git build-essential tightvncserver sudo python3.9
-# vnc4server
+ENV HOME /home/kasm-default-profile
+ENV STARTUPDIR /dockerstartup
+ENV INST_SCRIPTS $STARTUPDIR/install
+WORKDIR $HOME
 
-# Add user
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-RUN useradd -ms /bin/bash user
-RUN usermod -aG sudo user
-USER user
-WORKDIR /home/user
+######### Customize Container Here ###########
 
-# Get OpenPLC Editor
-RUN git clone https://github.com/thiagoralves/OpenPLC_Editor
-RUN /home/user/OpenPLC_Editor/install.sh
+RUN usermod -aG sudo kasm-user
+COPY ./src/ubuntu/install/openplc-editor $INST_SCRIPTS/openplc-editor/
+RUN bash $INST_SCRIPTS/openplc-editor/install_openplc-editor.sh  && rm -rf $INST_SCRIPTS/openplc-editor/
 
-# Copy PLC rojects
-RUN mkdir /home/user/Desktop
-COPY --chown=user attack.st /home/user/Desktop/attack.st
-COPY --chown=user plc.st /home/user/Desktop/plc.st
+COPY ./src/ubuntu/install/openplc-editor/custom_startup.sh $STARTUPDIR/custom_startup.sh
+RUN chmod +x $STARTUPDIR/custom_startup.sh
+RUN chmod 755 $STARTUPDIR/custom_startup.sh
 
-# Download noVNC
-RUN git clone https://github.com/novnc/noVNC
-RUN git clone https://github.com/novnc/websockify /home/user/noVNC/utils/websockify
+# Update the desktop environment to be optimized for a single application
+RUN cp $HOME/.config/xfce4/xfconf/single-application-xfce-perchannel-xml/* $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
+RUN cp /usr/share/backgrounds/bg_kasm.png /usr/share/backgrounds/bg_default.png
+RUN apt-get remove -y xfce4-panel
 
-# Prepare VNC
-RUN mkdir -p /home/user/.vnc
-RUN ln -s /home/user/.vnc/xstartup /home/user/.xinitrc
-COPY --chown=user launch.sh /home/user/noVNC/utils/launch.sh
-COPY --chown=user index.html /home/user/noVNC/index.html
-COPY --chown=user passwd /home/user/.vnc/passwd
-COPY --chown=user --chmod=0755 xstartup /home/user/.vnc/xstartup
-ENV USER=user
+# Include projects
+COPY attack /home/kasm-user/Documents/attack
+COPY chemical /home/kasm-user/Documents/chemical
 
-# Startup
-EXPOSE 80:6080
-ENTRYPOINT /usr/bin/vncserver -depth 16 -geometry 1024x768 :1 && /home/user/noVNC/utils/launch.sh --vnc localhost:5901
+######### End Customizations ###########
+
+RUN chown 1000:0 $HOME
+
+ENV HOME /home/kasm-user
+WORKDIR $HOME
+RUN mkdir -p $HOME && chown -R 1000:0 $HOME
+
+USER 1000
