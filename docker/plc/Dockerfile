@@ -11,6 +11,9 @@ WORKDIR /usr/local/src/OpenPLC
 RUN find . -type f -exec dos2unix {} \;
 RUN find . -type f -iname "*.sh" -exec chmod +x {} \;
 
+# Copy the PLC program
+COPY ../workstation/chemical.st /usr/local/src/OpenPLC/st_files/blank_program.st
+
 # Build the OpenPLC project
 RUN printf "n\n1\n" | bash /usr/local/src/OpenPLC/build.sh
 
