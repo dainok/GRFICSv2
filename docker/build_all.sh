@@ -1,9 +1,8 @@
 #!/bin/bash
 
-RELEASE=14
+RELEASE=19
 
-DIRS="hmi plc simulation"
-DIRS="hmi simulation"
+DIRS="hmi plc simulation workstation"
 
 docker login --username=dainok
 
