@@ -1,26 +1,27 @@
-FROM ubuntu:14.04
+FROM ubuntu:22.04
 
 # Install dependencies
 RUN apt-get update
 RUN apt-get -y install sudo dos2unix build-essential pkg-config bison flex autoconf automake libtool make nodejs git
 
-COPY OpenPLC_v2-master /usr/local/src/OpenPLC
+# Install OpenPLC
+RUN git clone https://github.com/thiagoralves/OpenPLC_v3 /usr/local/src/OpenPLC
 WORKDIR /usr/local/src/OpenPLC
-
-# Convert windows type line endings
-RUN find . -type f -exec dos2unix {} \;
-RUN find . -type f -iname "*.sh" -exec chmod +x {} \;
-
-# Copy the PLC program
-COPY ../workstation/chemical.st /usr/local/src/OpenPLC/st_files/blank_program.st
-
-# Build the OpenPLC project
-RUN printf "n\n1\n" | bash /usr/local/src/OpenPLC/build.sh
-
-# Configure simulation IP address
+RUN git checkout c490ebf82c715c028bea3ad0a44db4a78033f35d
+RUN ./background_installer.sh linux
 COPY --chmod=0755 set_sim_address.sh /sbin
+
+# Copy PLC programs
+COPY openplc.db /usr/local/src/OpenPLC/webserver/openplc.db
+COPY mbconfig.cfg /usr/local/src/OpenPLC/webserver/mbconfig.cfg
+COPY chemical_program.st /usr/local/src/OpenPLC/webserver/st_files/chemical_program.st
+COPY attack_program.st /usr/local/src/OpenPLC/webserver/st_files/attack_program.st
+
+# Cleanup
+RUN apt-get autoclean
+RUN rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
 # Startup
 EXPOSE 502:502
 EXPOSE 80:8080
-ENTRYPOINT /sbin/set_sim_address.sh && /usr/bin/nodejs server.js
+ENTRYPOINT /sbin/set_sim_address.sh && /usr/local/src/OpenPLC/start_openplc.sh
