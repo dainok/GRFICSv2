@@ -15,7 +15,6 @@ COPY --chmod=0755 set_sim_address.sh /sbin
 COPY openplc.db /usr/local/src/OpenPLC/webserver/openplc.db
 COPY mbconfig.cfg /usr/local/src/OpenPLC/webserver/mbconfig.cfg
 COPY chemical_program.st /usr/local/src/OpenPLC/webserver/st_files/chemical_program.st
-COPY attack_program.st /usr/local/src/OpenPLC/webserver/st_files/attack_program.st
 
 # Cleanup
 RUN apt-get autoclean
